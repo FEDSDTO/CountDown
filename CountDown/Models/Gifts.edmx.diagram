@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="4447d9c1f9d9433ba72a4f5261a1d0fd" Name="Diagram1">
+        <EntityTypeShape EntityType="GiftsModel.EntityPresent_Log" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="GiftsModel.PosIdList" Width="1.5" PointX="4.625" PointY="0.75" />
+        <EntityTypeShape EntityType="GiftsModel.Exchange_Gifts" Width="1.5" PointX="0.75" PointY="4.75" />
+        <EntityTypeShape EntityType="GiftsModel.ExchangeMall" Width="1.5" PointX="2.75" PointY="4.75" />
+        <EntityTypeShape EntityType="GiftsModel.UsedRule" Width="1.5" PointX="4.75" PointY="4.75" />
+        <EntityTypeShape EntityType="GiftsModel.EntityPresent" Width="1.5" PointX="0.625" PointY="0.875" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

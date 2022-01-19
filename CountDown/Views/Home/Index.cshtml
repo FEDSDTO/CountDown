@@ -1,0 +1,198 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>遠東百貨</title>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/windowAlert.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.3.1.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <script src="~/Scripts/windowAlert.js"></script>
+    <meta property="fb:app_id" content="1906735452872609" />
+    <meta property="og:title" content="遠東百貨" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="" />
+    <meta property="og:image" content="" />
+    <meta property="og:site_name" content="遠東百貨" />
+    <meta property="og:description" content="遠東百貨會員生日獨享好禮" />
+    <link rel="shortcut icon" href="https://www.feds.com.tw/favicon.ico" type="image/x-icon" />
+    <meta name="keywords" content="遠東，遠百，大遠百，百貨，週年慶，年中慶，折扣，化妝品，保養品，女裝，男裝，童裝，餐廳，服飾，美食，小吃街，大食代，CitySuper，信義，數位，digital" />
+    <!-- Google Tag Manager -->
+    <script>
+        (function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-M8DMB8N');</script>
+    <!-- End Google Tag Manager -->
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M8DMB8N"
+                height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+</body>
+</html>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var _posId;
+        //當天日期
+        var _today = new Date();
+        //當年
+        var _year = _today.getFullYear();
+        //當月
+        //test
+        //var _m = _today.getMonth() + 2;
+        //prod
+        var _m = _today.getMonth() + 1;
+
+        //當月最後一天
+        var lastDay = new Date(_year, _m, 0).getDate();
+
+        //local 
+        //var _loc = "";
+        //server test/prod
+        var _loc = "/CountDown/Home/";
+
+        var _location = location.href;
+
+        var _results = getQualify(_location);
+        if (_results.Status == false) {
+            swal(_result.Message, "", "error");
+        }
+        else {
+            swal({
+                title: '檢核碼',
+                html: '<input class="swal2-input" placeholder="請由專櫃人員輸入檢核碼" type="text" style="display: block;" id="text"><hr/>' +
+                    '<div style="color:red;font-weight: bold;text-align:left">注意事項：<br/ >1. 每人限兌換乙次，數量有限，兌完為止。<br/ >2. 請至專櫃由現場服務人員協助兌換，一經兌換後將無法取消。<br/ >3. 兌換期限：' +
+                    _year + '年' + _m + '月1日至' + _year + '年' + _m + '月' + lastDay + '日止。</div>',
+                type: "warning",
+                showCancelButton: true,
+                allowOutsideClick: false,
+                confirmButtonText: '確定',
+                cancelButtonText: '取消',
+            }).then(function (text) {
+                var text = $("#text").val();
+
+                if (text == "") {
+                    return swal("請輸入檢核碼！", "", "error");
+                }
+                _posId = text;
+                _posId = _posId.replace(/[^0-9]/ig, '');
+
+                var _result = returnresult(_location, _posId);
+                if (_result.Status == false) {
+                    swal(_result.Message, "", "error");
+                }
+                else {
+                    return swal({
+                        title: '確定要進行兌換嗎?',
+                        text: '按下確定後將進行倒數',
+                        confirmButtonText: '確定',
+                        cancelButtonText: '取消',
+                        type: 'question',
+                        showCancelButton: true,
+                        allowOutsideClick: false
+                    }).then(function () {
+
+                        $.ajax({
+                            url: _loc + 'ExchangeGifts',
+                            type: 'POST',
+                            async: false,
+                            dataType: 'json',
+                            data: { results: _result },
+                            success: function (_data) {
+                                if (_data.Status == false) {
+                                    return swal(_data.Message, "", "error");
+                                }
+                                else {
+
+                                    //local
+                                    //var _imgUrl = "../Images/" + _year + "/" + _m + "/" + _data.DeptNo + ".jpg";
+                                    //server
+                                    var _imgUrl = "CountDown/Images/" + _year + "/" + _m + "/" + _data.DeptNo + ".jpg";
+
+                                    swal({
+                                        title: _result.Message,
+                                        imageUrl: _imgUrl,
+                                        imageWidth: 450,
+                                        imageHeight: 450,
+                                        html: '<div class="colockbox " id="colockbox1"><label class="control-label">時間剩餘　</label><span class = "minute" style = "color:red;font-weight: bold;"> 03</span><label class="control-label">：</label><span class="second" style = "color:red;font-weight: bold;">00</span></div>',
+                                        showConfirmButton: false,
+                                        allowOutsideClick: false,
+                                        timer: 180000
+                                    })
+
+                                    countDown("02:59", "#colockbox1");
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+        }       
+
+        //檢查是否有資格兌換或已兌換過贈品
+        function returnresult(_location, _posId) {
+            var _result;
+
+            $.ajax({
+                url: _loc + 'GetCheck',
+                type: 'POST',
+                async: false,
+                dataType: 'json',
+                data: { _Location: _location, PosId: _posId },
+                success: function (_data) {
+                    _result = _data;
+                }
+            });
+            return _result;
+        }
+
+        //倒數計時器
+        function countDown(time, id) {
+            var minute_elem = $(id).find('.minute');
+            var second_elem = $(id).find('.second');
+            var end_time = 180000; //02:59
+            var sys_second = (end_time) / 1000;
+            var timer = setInterval(function () {
+                if (sys_second > 1) {
+                    sys_second -= 1;
+                    var minute = Math.floor((sys_second / 60) % 60);
+                    var second = Math.floor(sys_second % 60);
+                    $(minute_elem).text(minute < 10 ? "0" + minute : minute);
+                    $(second_elem).text(second < 10 ? "0" + second : second);
+                }
+                else {
+                    clearInterval(timer);
+                }
+            }, 1000);
+        }
+
+        //檢查是否有資格兌換
+        function getQualify(_location) {
+            $.ajax({
+                url: _loc + 'GetQualify',
+                type: 'POST',
+                async: false,
+                dataType: 'json',
+                data: { _Location: _location },
+                success: function (_data) {
+                    _result = _data;
+                }
+            });
+            return _result;
+        }
+
+    });
+</script>
